@@ -64,7 +64,7 @@ export GO_LDFLAGS
 IMAGES = $(PROJECT_NAME)
 FVTIMAGE = $(PROJECT_NAME)-fvt
 
-RELEASE_PLATFORMS = linux-amd64 darwin-amd64 linux-ppc64le linux-s390x windows-amd64
+RELEASE_PLATFORMS = linux-arm64 darwin-amd64 linux-ppc64le linux-s390x windows-amd64
 RELEASE_PKGS = fabric-ca-client fabric-ca-server
 
 path-map.fabric-ca-client := cmd/fabric-ca-client
@@ -245,10 +245,10 @@ release/darwin-amd64: GOOS=darwin
 release/darwin-amd64: CC=/usr/bin/clang
 release/darwin-amd64: $(patsubst %,release/darwin-amd64/bin/%, $(RELEASE_PKGS))
 
-release/linux-amd64: GOOS=linux
-release/linux-amd64: $(patsubst %,release/linux-amd64/bin/%, $(RELEASE_PKGS))
+release/linux-arm64: GOOS=linux
+release/linux-arm64: $(patsubst %,release/linux-arm64/bin/%, $(RELEASE_PKGS))
 
-release/%-amd64: GOARCH=amd64
+release/%-arm64: GOARCH=arm64
 
 release/linux-%: GOOS=linux
 
@@ -278,8 +278,8 @@ dist/windows-amd64: release/windows-amd64
 	cd release/windows-amd64 && tar -czvf hyperledger-fabric-ca-windows-amd64-$(PROJECT_VERSION).tar.gz *
 dist/darwin-amd64: release/darwin-amd64
 	cd release/darwin-amd64 && tar -czvf hyperledger-fabric-ca-darwin-amd64-$(PROJECT_VERSION).tar.gz *
-dist/linux-amd64: release/linux-amd64
-	cd release/linux-amd64 && tar -czvf hyperledger-fabric-ca-linux-amd64-$(PROJECT_VERSION).tar.gz *
+dist/linux-arm64: release/linux-arm64
+	cd release/linux-arm64 && tar -czvf hyperledger-fabric-ca-linux-arm64-$(PROJECT_VERSION).tar.gz *
 dist/linux-ppc64le: release/linux-ppc64le
 	cd release/linux-ppc64le && tar -czvf hyperledger-fabric-ca-linux-ppc64le-$(PROJECT_VERSION).tar.gz *
 dist/linux-s390x: release/linux-s390x
@@ -301,7 +301,7 @@ release-clean: $(patsubst %,%-release-clean, $(RELEASE_PLATFORMS))
 dist-clean:
 	-@rm -rf release/windows-amd64/hyperledger-fabric-ca-windows-amd64-$(PROJECT_VERSION).tar.gz ||:
 	-@rm -rf release/darwin-amd64/hyperledger-fabric-ca-darwin-amd64-$(PROJECT_VERSION).tar.gz ||:
-	-@rm -rf release/linux-amd64/hyperledger-fabric-ca-linux-amd64-$(PROJECT_VERSION).tar.gz ||:
+	-@rm -rf release/linux-arm64/hyperledger-fabric-ca-linux-arm64-$(PROJECT_VERSION).tar.gz ||:
 	-@rm -rf release/linux-ppc64le/hyperledger-fabric-ca-linux-ppc64le-$(PROJECT_VERSION).tar.gz ||:
 	-@rm -rf release/linux-s390x/hyperledger-fabric-ca-linux-s390x-$(PROJECT_VERSION).tar.gz ||:
 
