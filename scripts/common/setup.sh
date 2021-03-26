@@ -30,7 +30,8 @@ export GOROOT="/opt/go"
 # Install Golang
 # ----------------------------------------------------------------
 mkdir -p $GOPATH
-ARCH=`uname -m | sed 's|i686|386|' | sed 's|x86_64|amd64|'`
+#ARCH=`uname -m | sed 's|i686|386|' | sed 's|x86_64|amd64|'`
+ARCH=`uname -m | sed 's|i686|386|' | sed 's|x86_64|amd64|' | sed 's|aarch64|arm64|'`
 BINTARGETS="x86_64 ppc64le s390x"
 GO_VER=1.13.12
 
@@ -44,16 +45,16 @@ if echo $BINTARGETS | grep -q `uname -m`; then
 # Otherwise, build Golang from source
 else
    # Install Golang 1.6 binary as a bootstrap to compile the Golang GO_VER source
-   apt-get -y install golang-1.6
+   apt-get -y install golang
 
    cd /tmp
    wget --quiet --no-check-certificate https://storage.googleapis.com/golang/go${GO_VER}.src.tar.gz
    tar -xzf go${GO_VER}.src.tar.gz -C /opt
 
    cd $GOROOT/src
-   export GOROOT_BOOTSTRAP="/usr/lib/go-1.6"
+   export GOROOT_BOOTSTRAP="/usr/lib/go"
    ./make.bash
-   apt-get -y remove golang-1.6
+   apt-get -y remove golang
 fi
 
 PATH=$GOROOT/bin:$GOPATH/bin:$PATH
@@ -70,7 +71,8 @@ EOF
 NODE_VER=8.16.1
 NPM_VER=6.11.3
 
-ARCH=`uname -m | sed 's|i686|x86|' | sed 's|x86_64|x64|'`
+#ARCH=`uname -m | sed 's|i686|x86|' | sed 's|x86_64|x64|'`
+ARCH=`uname -m | sed 's|i686|386|' | sed 's|x86_64|x64|' | sed 's|aarch64|arm64|'`
 NODE_PKG=node-v$NODE_VER-linux-$ARCH.tar.gz
 SRC_PATH=/tmp/$NODE_PKG
 

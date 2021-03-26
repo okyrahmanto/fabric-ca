@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Based on https://github.com/apache/couchdb-docker/blob/master/2.1.1/Dockerfile
 
-FROM debian:stretch-20190910-slim
+#FROM debian:stretch-20190910-slim
+FROM arm64v8/debian:buster
 
 # Add CouchDB user account
 RUN groupadd -g 5984 -r couchdb && useradd -u 5984 -d /opt/couchdb -g couchdb couchdb
@@ -12,8 +13,7 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends \
     curl \
     erlang-nox \
     erlang-reltool \
-    libicu57 \
-    libmozjs185-1.0 \
+    libicu63 \
     openssl \
     dirmngr \
     gnupg \
@@ -57,7 +57,7 @@ RUN set -ex; \
                                 hkp://keyserver.ubuntu.com:80 \
                                 pgp.mit.edu) ; do \
             gpg --keyserver "$server" --recv-keys 595E85A6B1B4779EA4DAAEC70B588DFF0527A9B7 && break || : ; \
-    	done; \
+	done; \
 	gpg --batch --verify /usr/local/bin/tini.asc /usr/local/bin/tini; \
 	rm -r "$GNUPGHOME" || true; rm -r /usr/local/bin/tini.asc || true; \
 	chmod +x /usr/local/bin/tini; \
@@ -92,14 +92,68 @@ RUN set -xe \
 ENV COUCHDB_VERSION 2.3.1
 
 # Download dev dependencies
+RUN sed -i '/buster-updates/d' /etc/apt/sources.list
+RUN apt-get update -y
+RUN apt install -y wget
+RUN apt-get install -y libnspr4-dev libffi-dev
+# Download libffi6
+#RUN wget http://ftp.br.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-6_arm64.deb
+
+#gcc-10-base
+#RUN wget http://ftp.br.debian.org/debian/pool/main/g/gcc-10/gcc-10-base_10.2.1-6_arm64.deb
+
+#lib gcc
+#RUN wget http://ftp.br.debian.org/debian/pool/main/g/gcc-10/libgcc-s1_10.2.1-6_arm64.deb
+
+#libcrypt
+#RUN wget http://ftp.br.debian.org/debian/pool/main/libx/libxcrypt/libcrypt1_4.4.18-1_arm64.deb
+
+#libc
+#RUN wget http://ftp.br.debian.org/debian/pool/main/g/glibc/libc6_2.31-10_arm64.deb
+
+#libnspr4
+#RUN wget http://ftp.br.debian.org/debian/pool/main/n/nspr/libnspr4_4.29-1_arm64.deb
+
+# Download the libmozjs185-1.0
+RUN wget http://ftp.ro.debian.org/debian/pool/main/m/mozjs/libmozjs185-1.0_1.8.5-1.0.0+dfsg-6_arm64.deb
+
+# Download the libmozjs185-dev
+RUN wget http://ftp.br.debian.org/debian/pool/main/m/mozjs/libmozjs185-dev_1.8.5-1.0.0+dfsg-6_arm64.deb
+
+
+#install gcc-base
+#RUN dpkg -i gcc-10-base_10.2.1-6_arm64.deb
+
+#install lib gcc
+#RUN dpkg -i libgcc-s1_10.2.1-6_arm64.deb
+
+#install lincrypt
+#RUN dpkg -i libcrypt1_4.4.18-1_arm64.deb
+
+#install libc
+#RUN dpkg -i libc6_2.31-10_arm64.deb
+
+# Install libffi6
+#RUN dpkg -i libffi6_3.2.1-6_arm64.deb 
+#RUN dpkg -i libnspr4_4.29-1_arm64.deb
+# Install libmozjs185-1.0
+RUN dpkg -i libmozjs185-1.0_1.8.5-1.0.0+dfsg-6_arm64.deb 
+
+# Install libmozjs185-dev
+RUN dpkg -i libmozjs185-dev_1.8.5-1.0.0+dfsg-6_arm64.deb 
+
+# Fix eventual missing dependencies
+RUN apt --fix-broken install
+
+
 RUN buildDeps=' \
     apt-transport-https \
     gcc \
     g++ \
     erlang-dev \
+#    libmozjs185-dev \
     libcurl4-openssl-dev \
     libicu-dev \
-    libmozjs185-dev \
     make \
   ' \
  && apt-get update -y -qq && apt-get install -y --no-install-recommends $buildDeps \

@@ -3,7 +3,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #
-FROM debian:buster-20190910-slim as download
+#FROM debian:buster-20190910-slim as download
+FROM arm64v8/debian:buster as download
 RUN apt-get update \
     && apt-get install -y curl \
     tar \
@@ -20,7 +21,8 @@ RUN echo "${KAFKA_DOWNLOAD_SHA1}  kafka.tgz" | sha1sum -c - \
     && tar xfz kafka.tgz -C /opt/kafka --strip-components=1 \
     && rm -f kafka.tgz;
 
-FROM adoptopenjdk:8u222-b10-jre-openj9-0.15.1
+#FROM adoptopenjdk:8u222-b10-jre-openj9-0.15.1
+FROM adoptopenjdk/openjdk8:aarch64-debian-jdk8u222-b10
 COPY --from=download /opt/kafka /opt/kafka
 ADD ./kafka-run-class.sh /opt/kafka/bin/kafka-run-class.sh
 ADD ./docker-entrypoint.sh /docker-entrypoint.sh
